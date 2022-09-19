@@ -1,0 +1,10 @@
+[flake8]
+generate_versions = flake8
+extend-ignore = W292, E501
+format = html
+htmldir = .\flake
+exclude =
+    # No need to traverse our env and its lib in projet4
+    .git,
+    .env
+    .\projet4\lib
