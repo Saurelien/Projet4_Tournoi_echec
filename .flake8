@@ -1,5 +1,4 @@
 [flake8]
-generate_versions = flake8
 extend-ignore = W292, E501
 format = html
 htmldir = .\flake
