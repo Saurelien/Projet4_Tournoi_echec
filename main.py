@@ -1,7 +1,6 @@
-from tournoi.controlers import HomeController, ReportController
+from tournoi.controlers import HomeController
 from tournoi.models import Player, Tournament, tournament_list, players_list
-from tinydb import TinyDB
-
+# from tinydb import TinyDB
 
 
 players_list.append(Player.player_finalized(Player))

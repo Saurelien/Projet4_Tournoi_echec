@@ -1,6 +1,6 @@
 [flake8]
 extend-ignore = W292, E501
-#format = html
+format = html
 htmldir = .\flake
 exclude =
     # No need to traverse our env and its lib in projet4
