@@ -66,7 +66,6 @@ class Tournament:
         tournament_table.truncate()
         tournament_table.insert(data)
         return data
-    """Au demarrage du programme charger les données du tournoi terminé"""
 
     @classmethod
     def deserialize_tournament(cls, data):
