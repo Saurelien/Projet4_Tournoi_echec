@@ -86,7 +86,7 @@ class Tournament:
 
 
 class Player:
-    """Initialise la carte du joueur d'échec"""
+
     def __init__(self, first_name, last_name, date_of_birth, gender, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.first_name = first_name
@@ -114,8 +114,7 @@ class Player:
                  "position": self.position
                 }
 
-    classmethod
-
+    @classmethod
     def deserialize_player(cls, data):
         return cls(data["first_name"],
                    data["last_name"],
