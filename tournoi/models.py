@@ -2,7 +2,7 @@ from tinydb import TinyDB
 
 players_list = []
 tournament_list = []
-current_tournament = None
+current_tournament = []
 
 
 class Tournament:

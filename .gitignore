@@ -2,5 +2,3 @@ venv
 __pycache__/
 *.pyc
 *.json
-flake/.svg
-flake/.css
