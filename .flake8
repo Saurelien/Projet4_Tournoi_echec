@@ -1,7 +1,7 @@
 [flake8]
-max-line-length = 119
+max-line-length =119
 comma_separated_list=True
 normalize_paths=True
-format = html
-htmldir = flake
-exclude = venv
+format =html
+htmldir =flake
+exclude =venv

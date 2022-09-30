@@ -1,5 +1,5 @@
 from tournoi.controlers import HomeController
-from tournoi.models import Player, Tournament, tournament_list, players_list
+from tournoi.models import Player
 from tinydb import TinyDB
 
 """créer une méthode pour load les joueurs et aussi pour les tournois load tournament"""
@@ -7,6 +7,7 @@ from tinydb import TinyDB
 
 def get_player_list_load(players_list: list() = []):
     players_list.append(Player.player_finalized(Player))
+
 
 def get_tournament_load(self, tournament_list: list() = []):
     pass
