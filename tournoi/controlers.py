@@ -67,16 +67,15 @@ class ReportController:
 
     def create_report_alpha(self):
         view_sort = SortPlayer()
-        view_sort.display_sort_players(sorted(
-            players_list, key=lambda x: (x.first_name, x.last_name)), sorted(tournament_list, key=lambda x: x.name))
+        view_sort.display_sort_players(sorted(players_list,
+                                              key=lambda x: (x.first_name,
+                                                             x.last_name)))
 
     def create_report_points(self):
         view_points = SortPlayer()
         view_points.display_sort_points(sorted(players_list,
                                         key=lambda x: x.position,
-                                        reverse=True),
-                                        sorted(tournament_list,
-                                        key=lambda x: x.name))
+                                        reverse=True))
 
     def tournament_detail(self):
         tournament_list_view = TournamentView()
@@ -96,6 +95,7 @@ class TournamentController:
 
     def create_tournament_controler(self):
         tournament_view = TournamentView()
-        name, place, date, nb_round, time_control, description, nb_players = tournament_view.display_create_tournament()
+        (name, place, date, nb_round, time_control,
+         description, nb_players) = tournament_view.display_create_tournament()
         new_tournament = Tournament(name, place, date, nb_round, time_control, description, nb_players)
         return new_tournament

@@ -15,6 +15,8 @@ class Colors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    vert = OKGREEN + BOLD
+    ligne = HEADER + UNDERLINE
     design = f"{STR_YELLOW + BOLD} |----------| {ENDC}"
     d_red_vs = f"{FAIL + BOLD} -- VS -- {ENDC}"
     d_red = f"{FAIL + BOLD} |----------| {ENDC}"
@@ -45,7 +47,8 @@ class TournamentView:
 
     def display_all_tournaments(self, tournament_list: list() = []):
         for i, tournament in enumerate(tournament_list, start=1):
-            print(f"{Colors.OKCYAN} - {Colors.STR_YELLOW}Selection du tournoi à afficher: {Colors.OKCYAN}{i} {Colors.OKGREEN}{tournament.name}""\n")
+            print(f"{Colors.OKCYAN} - {Colors.STR_YELLOW}Selection du tournoi à afficher: ")
+            print(f" {Colors.OKCYAN}{i} {Colors.OKGREEN}{tournament.name}""\n")
         return int(input(f"{Colors.STR_YELLOW}Quel est votre choix: ")) - 1
 
     def view_details_tournament(self, tournament):
@@ -56,10 +59,14 @@ class TournamentView:
         print(f"{Colors.STR_YELLOW}Liste des tour d'un tournoi: ""\n")
         for i, round_info in enumerate(tournament.rounds, start=1):
             for player_round in round_info.matchs:
-                print(f"{Colors.OKCYAN}- {i} {Colors.OKGREEN}{player_round.player1} {Colors.d_red_vs} {Colors.OKGREEN}{player_round.player2}""\n")
+                player_1 = f"{Colors.OKGREEN}{player_round.player1}"
+                player_2 = f"{Colors.OKGREEN}{player_round.player2}"
+                print(f"{Colors.OKCYAN}- {i} {player_1} {Colors.d_red_vs} {player_2}""\n")
         print(f"{Colors.STR_YELLOW}Classement des joueurs: ""\n")
         for rank in tournament.players:
-            print(f"{Colors.OKCYAN}* {Colors.OKGREEN}{rank.position} {Colors.FAIL} points {Colors.design} {Colors.OKCYAN}* {Colors.OKGREEN}{rank.first_name}")
+            player_position = f"{Colors.OKGREEN}{rank.position} {Colors.FAIL} points"
+            player_first_name = f"{Colors.OKCYAN}* {Colors.OKGREEN}{rank.first_name}"
+            print((f"{Colors.OKCYAN}* {player_position} {Colors.design} {player_first_name}"))
         print("\n"f"{Colors.STR_YELLOW}Liste des matchs: {Colors.ENDC}""\n")
         for t_round in tournament.rounds:
             for match in t_round.matchs:
@@ -70,11 +77,11 @@ class HomeView:
 
     def display_home(self):
         print("\n"f"{Colors.OKCYAN + Colors.BOLD}'l' {Colors.STR_YELLOW}Pour créer un tournoi: ""\n")
-        print(f"{Colors.OKCYAN + Colors.BOLD}'B' {Colors.STR_YELLOW}Pour afficher la liste des tournois: ""\n")
-        print(f"{Colors.OKCYAN + Colors.BOLD}'Y' {Colors.STR_YELLOW}Pour afficher la liste de tous les acteurs par ordre aphabétique: ""\n")
-        print(f"{Colors.OKCYAN + Colors.BOLD}'T' {Colors.STR_YELLOW}Pour afficher la liste de tous les acteurs par classement: ""\n")
+        print(f"{Colors.OKCYAN + Colors.BOLD}'B' {Colors.STR_YELLOW}Afficher la liste des tournois: ""\n")
+        print(f"{Colors.OKCYAN + Colors.BOLD}'Y' {Colors.STR_YELLOW}Afficher les acteurs par ordre aphabétique: ""\n")
+        print(f"{Colors.OKCYAN + Colors.BOLD}'T' {Colors.STR_YELLOW}Afficher les acteurs par classement: ""\n")
         print(f"{Colors.OKCYAN + Colors.BOLD}'Q' {Colors.STR_YELLOW}Quitter l'application: ""\n")
-        return input(f"{Colors.HEADER + Colors.UNDERLINE}{Colors.BOLD}Quel est votre choix ?{Colors.ENDC}: {Colors.OKBLUE}")
+        return input(f"{Colors.ligne}{Colors.BOLD}Quel est votre choix ?{Colors.ENDC}: {Colors.OKBLUE}")
 
 
 class PlayerView:
@@ -93,7 +100,7 @@ class RoundView:
     def display_round(self, my_round):
         print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}Detail du match {Colors.ENDC}: ""\n")
         for match in my_round.matchs:
-            print(f"{Colors.OKGREEN + Colors.BOLD}{match.player1} {Colors.d_red_vs} {Colors.OKGREEN}{match.player2}{Colors.ENDC}")
+            print(f"{Colors.vert}{match.player1} {Colors.d_red_vs} {Colors.vert}{match.player2}{Colors.ENDC}")
 
 
 class MatchView:
@@ -112,11 +119,14 @@ class MatchView:
         tournament.players.sort(key=lambda x: x.position, reverse=True)
         print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}Position des joueur du tournoi par points{Colors.ENDC}: ""\n")
         for player in tournament.players:
-            print(f"{Colors.OKCYAN}* {Colors.OKGREEN + Colors.BOLD}{player} {Colors.d_red} {Colors.OKGREEN}{player.position} Points{Colors.ENDC}")
+            player_position = f"{Colors.OKGREEN}{player.position} Points{Colors.ENDC}"
+            print(f"{Colors.OKCYAN}* {Colors.vert}{player} {Colors.d_red} {player_position}")
         tournament.players.sort(key=lambda x: x.first_name)
-        print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}Position des joueurs du tournoi par ordre alphabétique{Colors.ENDC}: {Colors.HEADER}""\n")
+        info_player = "Position des joueurs du tournoi par ordre alphabétique"
+        print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}{info_player}{Colors.ENDC}: {Colors.HEADER}""\n")
         for player in tournament.players:
-            print(f"* {Colors.OKGREEN}{player} {Colors.d_red} {Colors.OKGREEN}{player.position} Points {Colors.HEADER}""\n")
+            player_position = f"{Colors.OKGREEN}{player.position} Points {Colors.HEADER}"
+            print(f"* {Colors.OKGREEN}{player} {Colors.d_red} {player_position}""\n")
 
 
 class SortPlayer:
@@ -128,5 +138,7 @@ class SortPlayer:
 
     def display_sort_points(self, player_list: list() = []):
         for player_points in player_list:
-            players = f"{Colors.OKCYAN}* {Colors.OKGREEN}{player_points.position} Points {Colors.d_red_2} {Colors.OKGREEN}{player_points.first_name}"
+            player_name = f"{Colors.OKGREEN}{player_points.first_name}"
+            player_point = f"{Colors.OKGREEN}{player_points.position}"
+            players = f"{Colors.OKCYAN}* {player_point} Points {Colors.d_red_2} {player_name}"
             print(f"{players}""\n")
