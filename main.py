@@ -5,13 +5,16 @@ from tinydb import TinyDB
 """créer une méthode pour load les joueurs et aussi pour les tournois load tournament"""
 
 
-def get_player_list_load(players_list: list() = []):
+def player_load(players_list: list() = []):
     players_list.append(Player.player_finalized(Player))
 
 
-def get_tournament_load(self, tournament_list: list() = []):
+def tournament_load(tournament_list: list() = []):
     pass
 
+
+def current_tournament_load():
+    pass
 
 """tour = list()
 player_in_list = list()"""
