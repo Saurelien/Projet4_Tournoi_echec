@@ -2,8 +2,6 @@
 max-line-length = 119
 comma_separated_list=True
 normalize_paths=True
-#format = html
+format = html
 htmldir = flake
-exclude =
-    # No need to traverse our env and its lib in projet4
-    projet4
+exclude = venv
