@@ -1,9 +1,8 @@
 from tournoi.controlers import HomeController
-from tournoi.models import Player, Tournament
+from tournoi.models import Player, Tournament, players_list, tournament_list
 from tinydb import TinyDB, Query
 
 """créer une méthode pour load les joueurs et aussi pour les tournois load tournament"""
-players_list = list()
 tournament_list = list()
 data = Query()
 
@@ -16,36 +15,31 @@ data = Query()
         load_table.append(player.player_serialized(players))
     for p in load_table:
         players_list.append(Player.deserialize_player(p))
-    return players_list
+    return players_list"""
 
 
-def tournament_load(tournament):
+def tournament_load():
     
-    load_db = TinyDB("tournament_db.json")
-    load_db.all()
-    tournament_list.append(tournament)
-    return tournament_list"""
-
-def load_player(player_name):
-
-    load_db = TinyDB("tournament_db.json")
+    load_db = TinyDB("db.json")
     load_table = load_db.table("tournaments")
-    """for player in players_list:
-        load_table.insert(player.player_serialized())
+    for t in load_table:
+        print(t)
+        tournament_list.append(Tournament.deserialize(t))
+    print(tournament_list)
+
+def load_player():
+    load_db = TinyDB("player_db.json")
+    load_table = load_db.table("players")
     for p in load_table:
-        players_list.append(Player.deserialize_player(int(p)))
-    for player_p in players_list:
-        print(player_p.player_serialized(player_name))"""
-    player = load_db.contains(data.name)
-    print(player)
-    return player
-    
-        
+        print(p)
+        print(players_list.append(Player.deserialize(p)))
+
 
 def current_tournament_load():
     pass
 
-print(load_player(players_list))
+tournament_load()
+load_player()
 #print(tournament_load(tournament_list))
 
 controler = HomeController()

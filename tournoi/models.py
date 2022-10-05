@@ -41,10 +41,15 @@ class Tournament:
                     elif a_match.player2 == player:
                         player.position += a_match.score_p2
 
-    def tournament_finalized(self):
+    def save(self):
         tournament_list.append(self)
+        tournament_db = TinyDB("db.json")
+        tournament_table = tournament_db.table("tournaments")
+        tournament_table.truncate()
+        for tournament in tournament_list:
+            tournament_table.insert(tournament.serialized())
 
-    def tournament_serialized(self):
+    def serialized(self):
         data = {
                         "name": self.name,
                         "place": self.place,
@@ -56,32 +61,25 @@ class Tournament:
                         "nb_players": self.nb_players,
                         "players": list()
                     }
-
         for player in self.players:
-            data["players"].append(player.player_serialized())
+            data["players"].append(player.serialized())
         for data_tournament in self.rounds:
             data["rounds"].append(data_tournament.round_serialized())
-        tournament_db = TinyDB("tournament_db.json")
-        tournament_table = tournament_db.table("tournaments")
-        tournament_table.truncate()
-        tournament_table.insert(data)
         return data
 
     @classmethod
-    def deserialize_tournament(cls, data):
-        tournament_cls = cls(data["name"], data["place"], data["date"],
-                             data["nb_round"], data["time_control"],
-                             data["description"], data["nb_players"])
+    def deserialize(cls, data):
+        tournament_cls = cls(data["name"])
         tournament_cls.place = data["place"]
         tournament_cls.date = data["date"]
+        for round_info in data["rounds"]:
+            tournament_cls.add_round(Round.deserialize(round_info))
         tournament_cls.nb_round = data["nb_round"]
         tournament_cls.time_control = data["time_control"]
         tournament_cls.description = data["description"]
         tournament_cls.nb_players = data["nb_players"]
-        for round_info in data["rounds"]:
-            tournament_cls.add_round(Round.deserialize_round(round_info))
         for player_info in data["players"]:
-            tournament_cls.add_player(Player.deserialize_player(player_info))
+            tournament_cls.add_player(Player.deserialize(player_info))
         return tournament_cls
 
 
@@ -102,10 +100,15 @@ class Player:
     def __str__(self):
         return self.first_name
 
-    def player_finalized(self):
+    def save(self):
         players_list.append(self)
-
-    def player_serialized(self):
+        db = TinyDB("player_db.json")
+        db_table = db.table("players")
+        db_table.truncate()
+        for player in players_list:
+            db_table.insert(player.serialized()) 
+        
+    def serialized(self):
         return {
                  "first_name": self.first_name,
                  "last_name": self.last_name,
@@ -115,7 +118,7 @@ class Player:
                 }
 
     @classmethod
-    def deserialize_player(cls, data):
+    def deserialize(cls, data):
         return cls(data["first_name"],
                    data["last_name"],
                    data["date_of_birth"],
@@ -140,7 +143,7 @@ class Match:
                 "score_p1": self.score_p1,
                 "score_p2": self.score_p2
                 }
-
+    @classmethod
     def deserialize_match(cls, data):
         return cls(data["player1"],
                    data["player2"],
@@ -168,12 +171,11 @@ class Round:
         return data
 
     @classmethod
-    def deserialize_round(cls, data):
+    def deserialize(cls, data):
         round_tournament = cls(data["tournament"])
-        round_tournament.name = data["tournament"]
         for match_info in data["matchs"]:
             round_tournament.add_match(Match.deserialize_match(match_info))
-        return round_tournament
+            return round_tournament
 
     def generate_pair(self):
         self.tournament.players.sort(key=lambda x: x.position)
