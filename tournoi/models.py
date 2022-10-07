@@ -9,7 +9,7 @@ class Tournament:
 
     def __init__(self, name, place, date, nb_round, time_control,
                  description, nb_players, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.name = name
         self.place = place
         self.date = date
@@ -51,16 +51,16 @@ class Tournament:
 
     def serialized(self):
         data = {
-                        "name": self.name,
-                        "place": self.place,
-                        "date": self.date.strftime("%d-%m-%Y"),
-                        "rounds": list(),
-                        "nb_round": self.nb_round,
-                        "time_control": self.time_control,
-                        "description": self.description,
-                        "nb_players": self.nb_players,
-                        "players": list()
-                    }
+                    "name": self.name,
+                    "place": self.place,
+                    "date": self.date.strftime("%d-%m-%Y"),
+                    "rounds": list(),
+                    "nb_round": self.nb_round,
+                    "time_control": self.time_control,
+                    "description": self.description,
+                    "nb_players": self.nb_players,
+                    "players": list()
+                }
         for player in self.players:
             data["players"].append(player.serialized())
         for data_tournament in self.rounds:
@@ -69,24 +69,32 @@ class Tournament:
 
     @classmethod
     def deserialize(cls, data):
-        tournament_cls = cls(data["name"])
-        tournament_cls.place = data["place"]
-        tournament_cls.date = data["date"]
+        tournament = cls(data["name"]
+                         , data["place"]
+                         , data["date"]
+                         , data["nb_round"]
+                         , data["time_control"]
+                         , data["description"]
+                         , data["nb_players"])
+        tournament.place = data["place"]
+        tournament.date = data["date"]
         for round_info in data["rounds"]:
-            tournament_cls.add_round(Round.deserialize(round_info))
-        tournament_cls.nb_round = data["nb_round"]
-        tournament_cls.time_control = data["time_control"]
-        tournament_cls.description = data["description"]
-        tournament_cls.nb_players = data["nb_players"]
+            tournament.add_round(Round.deserialize(round_info))
+        tournament.nb_round = data["nb_round"]
+        tournament.time_control = data["time_control"]
+        tournament.description = data["description"]
+        tournament.nb_players = data["nb_players"]
         for player_info in data["players"]:
-            tournament_cls.add_player(Player.deserialize(player_info))
-        return tournament_cls
+            tournament.add_player(Player.deserialize(player_info))
+        return type(tournament)
 
+    def check_step(self):
+        pass
 
 class Player:
 
     def __init__(self, first_name, last_name, date_of_birth, gender, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.first_name = first_name
         self.last_name = last_name
         self.date_of_birth = date_of_birth
@@ -107,7 +115,7 @@ class Player:
         db_table.truncate()
         for player in players_list:
             db_table.insert(player.serialized()) 
-        
+
     def serialized(self):
         return {
                  "first_name": self.first_name,
@@ -119,17 +127,16 @@ class Player:
 
     @classmethod
     def deserialize(cls, data):
-        return cls(data["first_name"],
-                   data["last_name"],
-                   data["date_of_birth"],
-                   data["gender"],
-                   data["position"])
+        return cls(data["first_name"]
+                   , data["last_name"]
+                   , data["date_of_birth"]
+                   , data["gender"]
+                   , data["position"])
 
 
 class Match:
 
     def __init__(self, player1, player2):
-        """Correspond à deux joueurs qui s'affrontent par match"""
         self.round = None
         self.player1 = player1
         self.player2 = player2
@@ -143,6 +150,7 @@ class Match:
                 "score_p1": self.score_p1,
                 "score_p2": self.score_p2
                 }
+
     @classmethod
     def deserialize_match(cls, data):
         return cls(data["player1"],
@@ -172,10 +180,8 @@ class Round:
 
     @classmethod
     def deserialize(cls, data):
-        round_tournament = cls(data["tournament"])
-        for match_info in data["matchs"]:
-            round_tournament.add_match(Match.deserialize_match(match_info))
-            return round_tournament
+        for match_info in cls(data["matchs"]):
+            Round.add_match(Match.deserialize_match(match_info))
 
     def generate_pair(self):
         self.tournament.players.sort(key=lambda x: x.position)
