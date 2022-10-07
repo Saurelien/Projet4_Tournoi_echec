@@ -15,7 +15,7 @@ class HomeController:
         for i in range(int(tournament.nb_players)):
             player = player_controler.create_user()
             player.save()
-            player.serialized()
+            player.serialize()
             tournament.add_player(player)
         view_round = RoundView()
         for j in range(int(tournament.nb_round)):
@@ -36,7 +36,7 @@ class HomeController:
             tournament.update_score()
             match_view.display_ranking(tournament)
         tournament.save()
-        tournament.serialized()
+        tournament.serialize()
 
     def display_main_page(self):
         main = HomeView()

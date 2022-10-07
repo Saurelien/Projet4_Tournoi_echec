@@ -1,3 +1,4 @@
+from queue import Empty
 from tinydb import TinyDB
 
 players_list = []
@@ -49,7 +50,7 @@ class Tournament:
         for tournament in tournament_list:
             tournament_table.insert(tournament.serialized())
 
-    def serialized(self):
+    def serialize(self):
         data = {
                     "name": self.name,
                     "place": self.place,
@@ -76,20 +77,23 @@ class Tournament:
                          , data["time_control"]
                          , data["description"]
                          , data["nb_players"])
-        tournament.place = data["place"]
-        tournament.date = data["date"]
+        #tournament.place = data["place"]
+        #tournament.date = data["date"]
         for round_info in data["rounds"]:
             tournament.add_round(Round.deserialize(round_info))
-        tournament.nb_round = data["nb_round"]
-        tournament.time_control = data["time_control"]
-        tournament.description = data["description"]
-        tournament.nb_players = data["nb_players"]
+        #tournament.nb_round = data["nb_round"]
+        #tournament.time_control = data["time_control"]
+        #tournament.description = data["description"]
+        #tournament.nb_players = data["nb_players"]
         for player_info in data["players"]:
             tournament.add_player(Player.deserialize(player_info))
         return type(tournament)
 
     def check_step(self):
-        pass
+        current_db = TinyDB("current_t.json")
+        current_table = current_db.table("current_tournament")
+        current_table.truncate()
+        
 
 class Player:
 
@@ -116,7 +120,7 @@ class Player:
         for player in players_list:
             db_table.insert(player.serialized()) 
 
-    def serialized(self):
+    def serialize(self):
         return {
                  "first_name": self.first_name,
                  "last_name": self.last_name,
@@ -152,11 +156,9 @@ class Match:
                 }
 
     @classmethod
-    def deserialize_match(cls, data):
-        return cls(data["player1"],
-                   data["player2"],
-                   data["score_p1"],
-                   data["score_p2"])
+    def deserialize(cls, data):
+        return cls(data["player1"]
+                , data["player2"])
 
 
 class Round:
@@ -178,10 +180,11 @@ class Round:
             data["matchs"].append(data_round.match_serialized())
         return data
 
-    @classmethod
-    def deserialize(cls, data):
-        for match_info in cls(data["matchs"]):
-            Round.add_match(Match.deserialize_match(match_info))
+    
+    def deserialize(data):
+        for match_info in data["matchs"]:
+            for match in match_info:
+                Round.add_match(Match.deserialize(match))
 
     def generate_pair(self):
         self.tournament.players.sort(key=lambda x: x.position)
