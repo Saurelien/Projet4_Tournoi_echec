@@ -1,4 +1,3 @@
-from queue import Empty
 from tinydb import TinyDB
 
 players_list = []
@@ -10,7 +9,7 @@ class Tournament:
 
     def __init__(self, name, place, date, nb_round, time_control,
                  description, nb_players, *args, **kwargs):
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self.name = name
         self.place = place
         self.date = date
@@ -35,26 +34,29 @@ class Tournament:
 
     def update_score(self):
         for player in self.players:
+            print(player)
             for a_round in self.rounds:
-                for a_match in a_round.matchs:
-                    if a_match.player1 == player:
-                        player.position += a_match.score_p1
-                    elif a_match.player2 == player:
-                        player.position += a_match.score_p2
-
+                match = a_round.matchs
+                break
+            for a_match in match:
+                if a_match.player1 == player:
+                    player.position += a_match.score_p1
+                elif a_match.player2 == player:
+                    player.position += a_match.score_p2
+        
     def save(self):
         tournament_list.append(self)
         tournament_db = TinyDB("db.json")
         tournament_table = tournament_db.table("tournaments")
         tournament_table.truncate()
         for tournament in tournament_list:
-            tournament_table.insert(tournament.serialized())
+            tournament_table.insert(tournament.serialize())
 
     def serialize(self):
         data = {
                     "name": self.name,
                     "place": self.place,
-                    "date": self.date.strftime("%d-%m-%Y"),
+                    "date": self.date,
                     "rounds": list(),
                     "nb_round": self.nb_round,
                     "time_control": self.time_control,
@@ -63,31 +65,26 @@ class Tournament:
                     "players": list()
                 }
         for player in self.players:
-            data["players"].append(player.serialized())
+            data["players"].append(player.serialize())
         for data_tournament in self.rounds:
             data["rounds"].append(data_tournament.round_serialized())
         return data
+    """.strptime("%d-%m-%Y")"""
 
     @classmethod
     def deserialize(cls, data):
-        tournament = cls(data["name"]
-                         , data["place"]
-                         , data["date"]
-                         , data["nb_round"]
-                         , data["time_control"]
-                         , data["description"]
-                         , data["nb_players"])
-        #tournament.place = data["place"]
-        #tournament.date = data["date"]
+        tournament = cls(data["name"],
+                         data["place"],
+                         data["date"],
+                         data["nb_round"],
+                         data["time_control"],
+                         data["description"],
+                         data["nb_players"])
         for round_info in data["rounds"]:
             tournament.add_round(Round.deserialize(round_info))
-        #tournament.nb_round = data["nb_round"]
-        #tournament.time_control = data["time_control"]
-        #tournament.description = data["description"]
-        #tournament.nb_players = data["nb_players"]
         for player_info in data["players"]:
             tournament.add_player(Player.deserialize(player_info))
-        return type(tournament)
+        return tournament
 
     def check_step(self):
         current_db = TinyDB("current_t.json")
@@ -98,7 +95,7 @@ class Tournament:
 class Player:
 
     def __init__(self, first_name, last_name, date_of_birth, gender, *args, **kwargs):
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self.first_name = first_name
         self.last_name = last_name
         self.date_of_birth = date_of_birth
@@ -118,7 +115,7 @@ class Player:
         db_table = db.table("players")
         db_table.truncate()
         for player in players_list:
-            db_table.insert(player.serialized()) 
+            db_table.insert(player.serialize()) 
 
     def serialize(self):
         return {
@@ -131,12 +128,12 @@ class Player:
 
     @classmethod
     def deserialize(cls, data):
-        return cls(data["first_name"]
-                   , data["last_name"]
-                   , data["date_of_birth"]
-                   , data["gender"]
-                   , data["position"])
-
+        instance = cls(data["first_name"],
+                       data["last_name"],
+                       data["date_of_birth"],
+                       data["gender"])
+        instance.position = data["position"]
+        return instance
 
 class Match:
 
@@ -149,16 +146,19 @@ class Match:
 
     def match_serialized(self):
         return {
-                "player1": self.player1.first_name,
-                "player2": self.player2.first_name,
+                "player1": self.player1.serialize(),
+                "player2": self.player2.serialize(),
                 "score_p1": self.score_p1,
                 "score_p2": self.score_p2
                 }
 
     @classmethod
     def deserialize(cls, data):
-        return cls(data["player1"]
-                , data["player2"])
+        instance =  cls(Player.deserialize(data["player1"]),
+                        Player.deserialize(data["player2"]))
+        instance.score_p1 = data["score_p1"]
+        instance.score_p2 = data["score_p2"]
+        return instance
 
 
 class Round:
@@ -180,12 +180,13 @@ class Round:
             data["matchs"].append(data_round.match_serialized())
         return data
 
-    
-    def deserialize(data):
+    @classmethod
+    def deserialize(cls, data):
+        instance = cls()
         for match_info in data["matchs"]:
-            for match in match_info:
-                Round.add_match(Match.deserialize(match))
-
+            instance.add_match(Match.deserialize(match_info))
+        return instance
+    
     def generate_pair(self):
         self.tournament.players.sort(key=lambda x: x.position)
         spliting = len(self.tournament.players)

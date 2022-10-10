@@ -42,12 +42,14 @@ class TournamentView:
         description = input(f"{Colors.HEADER}description du tournoi: {Colors.OKBLUE}")
         nb_players = int(input(f"{Colors.HEADER}Combien de joueurs ?: {Colors.OKBLUE}") or "8")
 
-        return (name, place, date, nb_round,
+        return (name, place, date.strftime("%d-%m-%Y"), nb_round,
                 time_control, description, nb_players)
 
     def display_all_tournaments(self, tournament_list: list() = []):
         for i, tournament in enumerate(tournament_list, start=1):
             print(f"{Colors.OKCYAN} - {Colors.STR_YELLOW}Selection du tournoi à afficher: ")
+            while tournament.name not in tournament.name:
+                print("Veuillez saisir un chiffre de tournoi", tournament.name)
             print(f" {Colors.OKCYAN}{i} {Colors.OKGREEN}{tournament.name}""\n")
         return int(input(f"{Colors.STR_YELLOW}Quel est votre choix: ")) - 1
 
@@ -117,16 +119,15 @@ class MatchView:
 
     def display_ranking(self, tournament):
         tournament.players.sort(key=lambda x: x.position, reverse=True)
-        print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}Position des joueur du tournoi par points{Colors.ENDC}: ""\n")
+        print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}Position des acteurs du tournoi par points{Colors.ENDC}: ""\n")
         for player in tournament.players:
             player_position = f"{Colors.OKGREEN}{player.position} Points{Colors.ENDC}"
             print(f"{Colors.OKCYAN}* {Colors.vert}{player} {Colors.d_red} {player_position}")
         tournament.players.sort(key=lambda x: x.first_name)
-        info_player = "Position des joueurs du tournoi par ordre alphabétique"
+        info_player = "Liste des acteurs du tournoi par ordre alphabétique"
         print("\n"f"{Colors.UNDERLINE}{Colors.HEADER}{info_player}{Colors.ENDC}: {Colors.HEADER}""\n")
         for player in tournament.players:
-            player_position = f"{Colors.OKGREEN}{player.position} Points {Colors.HEADER}"
-            print(f"* {Colors.OKGREEN}{player} {Colors.d_red} {player_position}""\n")
+            print(f"* {Colors.OKGREEN}{player}""\n")
 
 
 class SortPlayer:

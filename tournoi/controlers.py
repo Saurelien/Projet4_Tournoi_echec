@@ -6,7 +6,7 @@ colors = Colors()
 
 
 class HomeController:
-
+    
     def create_tournament(self):
         tournament_controller = TournamentController()
         player_controler = PlayerController()
@@ -30,10 +30,10 @@ class HomeController:
                     match.score_p1 = 1
                 elif winner == 2:
                     match.score_p2 = 1
-                elif winner == 0:
+                else: 
                     match.score_p1 = 0.5
                     match.score_p2 = 0.5
-            tournament.update_score()
+                tournament.update_score()
             match_view.display_ranking(tournament)
         tournament.save()
         tournament.serialize()
