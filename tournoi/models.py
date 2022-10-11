@@ -34,16 +34,14 @@ class Tournament:
 
     def update_score(self):
         for player in self.players:
-            print(player)
             for a_round in self.rounds:
                 match = a_round.matchs
-                break
             for a_match in match:
                 if a_match.player1 == player:
                     player.position += a_match.score_p1
                 elif a_match.player2 == player:
                     player.position += a_match.score_p2
-        
+                    
     def save(self):
         tournament_list.append(self)
         tournament_db = TinyDB("db.json")
@@ -188,7 +186,7 @@ class Round:
         return instance
     
     def generate_pair(self):
-        self.tournament.players.sort(key=lambda x: x.position)
+        #self.tournament.players.sort(key=lambda x: x.position)
         spliting = len(self.tournament.players)
         middle_index = spliting // 2
         superior_list = self.tournament.players[:middle_index]
