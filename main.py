@@ -35,9 +35,9 @@ def load_tournament():
     for save_p in players_list:
         print(save_p.serialize())"""
         
-
+#load_tournament()
 controler = HomeController()
 controler.display_main_page()
-#load_tournament()
+
 #print(tournament_load(tournament_list))
 

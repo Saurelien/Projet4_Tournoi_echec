@@ -14,8 +14,6 @@ class HomeController:
 
         for i in range(int(tournament.nb_players)):
             player = player_controler.create_user()
-            player.save()
-            player.serialize()
             tournament.add_player(player)
         view_round = RoundView()
         for j in range(int(tournament.nb_round)):
@@ -27,14 +25,19 @@ class HomeController:
             match_view = MatchView()
             for match in t_round.matchs:
                 winner = match_view.get_score(match)
-                if winner == 1:
+                match.set_winner(winner)
+                """if winner == 1:
                     match.score_p1 = 1
+                    match.player1.position += 1
                 elif winner == 2:
                     match.score_p2 = 1
+                    match.player2.position += 1
                 else:
                     match.score_p1 = 0.5
+                    match.player1.position += 0.5
                     match.score_p2 = 0.5
-            tournament.update_score()
+                    match.player2.position += 0.5"""
+            #tournament.update_score()
             match_view.display_ranking(tournament)
         tournament.save()
         tournament.serialize()

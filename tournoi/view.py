@@ -45,7 +45,7 @@ class TournamentView:
         return (name, place, date.strftime("%d-%m-%Y"), nb_round,
                 time_control, description, nb_players)
 
-    def display_all_tournaments(self, tournament_list: list() = []):
+    def display_all_tournaments(self, tournament_list):
         for i, tournament in enumerate(tournament_list):
             print(f"{Colors.OKCYAN} - {Colors.STR_YELLOW}Selection du tournoi à afficher: ")
             while tournament.name not in tournament.name:
@@ -107,6 +107,7 @@ class RoundView:
 
 class MatchView:
 
+
     def display_match(self, my_match):
         for match in my_match.matchs:
             print("\n"f"{Colors.OKGREEN}{match.round}")
@@ -132,12 +133,12 @@ class MatchView:
 
 class SortPlayer:
 
-    def display_sort_players(self, player_list: list() = []):
+    def display_sort_players(self, player_list):
         for player in player_list:
             players = f"{Colors.OKCYAN}* {Colors.OKGREEN}{player.first_name}"
             print(f"{players}""\n")
 
-    def display_sort_points(self, player_list: list() = []):
+    def display_sort_points(self, player_list):
         for player_points in player_list:
             player_name = f"{Colors.OKGREEN}{player_points.first_name}"
             player_point = f"{Colors.OKGREEN}{player_points.position}"

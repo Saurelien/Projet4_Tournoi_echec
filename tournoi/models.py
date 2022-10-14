@@ -1,5 +1,4 @@
 from tinydb import TinyDB
-
 players_list = []
 tournament_list = []
 current_tournament = []
@@ -32,18 +31,6 @@ class Tournament:
         return (self.name, self.place, self.date,
                 self.nb_round, self.time_control, self.description)
 
-    def update_score(self):
-        for player in self.players:
-            print(player.position)
-            for a_round in self.rounds:
-                print(player.position)
-                for a_match in a_round.matchs:
-                    print(a_match.player1, a_match.score_p1, "---------", a_match.player2, a_match.score_p2)
-                    print()
-                    if a_match.player1 == player:
-                        player.position += a_match.score_p1
-                    elif a_match.player2 == player:
-                        player.position += a_match.score_p2
     def save(self):
         tournament_list.append(self)
         tournament_db = TinyDB("db.json")
@@ -142,8 +129,8 @@ class Match:
         self.round = None
         self.player1 = player1
         self.player2 = player2
-        self.score_p1 = int(0)
-        self.score_p2 = int(0)
+        self.score_p1 = 0
+        self.score_p2 = 0
 
     def match_serialized(self):
         return {
@@ -161,6 +148,18 @@ class Match:
         instance.score_p2 = data["score_p2"]
         return instance.score_p1, instance.score_p2
 
+    def set_winner(self, winner):
+        if winner == 1:
+            self.score_p1 = 1
+            self.player1.position += 1
+        elif winner == 2:
+            self.score_p2 = 1
+            self.player2.position += 1
+        else:
+            self.score_p1 = 0.5
+            self.player1.position += 0.5
+            self.score_p2 = 0.5
+            self.player2.position += 0.5
 
 class Round:
 
