@@ -46,19 +46,19 @@ class TournamentView:
                 time_control, description, nb_players)
 
     def display_all_tournaments(self, tournament_list: list() = []):
-        for i, tournament in enumerate(tournament_list, start=1):
+        for i, tournament in enumerate(tournament_list):
             print(f"{Colors.OKCYAN} - {Colors.STR_YELLOW}Selection du tournoi à afficher: ")
             while tournament.name not in tournament.name:
                 print("Veuillez saisir un chiffre de tournoi", tournament.name)
             print(f" {Colors.OKCYAN}{i} {Colors.OKGREEN}{tournament.name}""\n")
-        return int(input(f"{Colors.STR_YELLOW}Quel est votre choix: ")) - 1
+        return int(input(f"{Colors.STR_YELLOW}Quel est votre choix: "))
 
     def view_details_tournament(self, tournament):
         print("\n"f"{Colors.STR_YELLOW}Liste des joueurs: ""\n")
         for player in tournament.players:
             print(f"{Colors.OKCYAN} * {Colors.OKGREEN}{player.first_name} {player.last_name}{Colors.ENDC}""\n")
         print("\n"f"{Colors.STR_YELLOW}Nombre de tours: {Colors.OKGREEN}{tournament.nb_round}")
-        print(f"{Colors.STR_YELLOW}Liste des tour d'un tournoi: ""\n")
+        print(f"{Colors.STR_YELLOW}Liste des tours d'un tournoi: ""\n")
         for i, round_info in enumerate(tournament.rounds, start=1):
             for player_round in round_info.matchs:
                 player_1 = f"{Colors.OKGREEN}{player_round.player1}"
@@ -114,7 +114,7 @@ class MatchView:
     def get_score(self, match):
         print("\n"f"{Colors.HEADER}Tapez 1: {Colors.OKBLUE}{match.player1}{Colors.HEADER} Gagnant(e) + 1 Point")
         print(f"{Colors.HEADER}Tapez 2: {Colors.OKBLUE}{match.player2}{Colors.HEADER} Gagnant(e) + 1 Point")
-        print(f"{Colors.HEADER}Tapez 0 pour égalité 0.5 Point {Colors.OKBLUE}""\n")
+        print(f"{Colors.HEADER}Tapez 0 pour égalité + 0.5 Point {Colors.OKBLUE}""\n")
         return int(input(f"{Colors.UNDERLINE}{Colors.HEADER}Quel est votre choix ?{Colors.ENDC}: {Colors.OKBLUE}"))
 
     def display_ranking(self, tournament):

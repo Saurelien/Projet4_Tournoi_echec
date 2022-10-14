@@ -34,14 +34,16 @@ class Tournament:
 
     def update_score(self):
         for player in self.players:
+            print(player.position)
             for a_round in self.rounds:
-                match = a_round.matchs
-            for a_match in match:
-                if a_match.player1 == player:
-                    player.position += a_match.score_p1
-                elif a_match.player2 == player:
-                    player.position += a_match.score_p2
-                    
+                print(player.position)
+                for a_match in a_round.matchs:
+                    print(a_match.player1, a_match.score_p1, "---------", a_match.player2, a_match.score_p2)
+                    print()
+                    if a_match.player1 == player:
+                        player.position += a_match.score_p1
+                    elif a_match.player2 == player:
+                        player.position += a_match.score_p2
     def save(self):
         tournament_list.append(self)
         tournament_db = TinyDB("db.json")
@@ -133,14 +135,15 @@ class Player:
         instance.position = data["position"]
         return instance
 
+
 class Match:
 
     def __init__(self, player1, player2):
         self.round = None
         self.player1 = player1
         self.player2 = player2
-        self.score_p1 = 0
-        self.score_p2 = 0
+        self.score_p1 = int(0)
+        self.score_p2 = int(0)
 
     def match_serialized(self):
         return {
@@ -152,11 +155,11 @@ class Match:
 
     @classmethod
     def deserialize(cls, data):
-        instance =  cls(Player.deserialize(data["player1"]),
-                        Player.deserialize(data["player2"]))
+        instance = cls(Player.deserialize(data["player1"]),
+                       Player.deserialize(data["player2"]))
         instance.score_p1 = data["score_p1"]
         instance.score_p2 = data["score_p2"]
-        return instance
+        return instance.score_p1, instance.score_p2
 
 
 class Round:
@@ -186,12 +189,19 @@ class Round:
         return instance
     
     def generate_pair(self):
-        #self.tournament.players.sort(key=lambda x: x.position)
+        self.tournament.players.sort(key=lambda x: x.position)
         spliting = len(self.tournament.players)
+        #list = self.tournament.players
         middle_index = spliting // 2
         superior_list = self.tournament.players[:middle_index]
         inferior_list = self.tournament.players[middle_index:]
+        #pairing = [(a, b) for id, a in enumerate(list) for b in list[id +1:]]
         for i, player1 in enumerate(superior_list):
-            player2 = inferior_list[i]
+            player2 = inferior_list[i - 1]
             match = Match(player1, player2)
             self.add_match(match)
+        """player1 = superior_list
+        player2 = inferior_list
+        pairing = [(a, b) for a in player1 for b in player2 if a != b]
+        match = Match(player1, player2)
+        self.add_match(match)"""

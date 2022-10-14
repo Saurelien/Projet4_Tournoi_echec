@@ -22,18 +22,19 @@ class HomeController:
             t_round = Round()
             tournament.add_round(t_round)
             t_round.generate_pair()
+            print(tournament.players)
             view_round.display_round(t_round)
+            match_view = MatchView()
             for match in t_round.matchs:
-                match_view = MatchView()
                 winner = match_view.get_score(match)
                 if winner == 1:
                     match.score_p1 = 1
                 elif winner == 2:
                     match.score_p2 = 1
-                else: 
+                else:
                     match.score_p1 = 0.5
                     match.score_p2 = 0.5
-                tournament.update_score()
+            tournament.update_score()
             match_view.display_ranking(tournament)
         tournament.save()
         tournament.serialize()
