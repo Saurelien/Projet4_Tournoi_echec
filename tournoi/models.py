@@ -1,7 +1,7 @@
 from tinydb import TinyDB
 players_list = []
 tournament_list = []
-current_tournament = []
+current_tournament = None
 
 
 class Tournament:
@@ -27,17 +27,21 @@ class Tournament:
         self.rounds.append(round_1)
         round_1.tournament = self
 
-    def __str__(self):
-        return (self.name, self.place, self.date,
-                self.nb_round, self.time_control, self.description)
-
-    def save(self):
+    def save(self, current=False):
+        if current:
+            tournament_db = TinyDB("db_current_tournament.json")
+            current_tournament_table = tournament_db.table("current_tournament")
+            current_tournament_table.truncate()
+            current_tournament_table.insert(self.serialize())
+            return
         tournament_list.append(self)
         tournament_db = TinyDB("db.json")
         tournament_table = tournament_db.table("tournaments")
         tournament_table.truncate()
         for tournament in tournament_list:
             tournament_table.insert(tournament.serialize())
+        for player in self.players:
+            player.save()
 
     def serialize(self):
         data = {
@@ -56,7 +60,6 @@ class Tournament:
         for data_tournament in self.rounds:
             data["rounds"].append(data_tournament.round_serialized())
         return data
-    """.strptime("%d-%m-%Y")"""
 
     @classmethod
     def deserialize(cls, data):
@@ -89,9 +92,9 @@ class Player:
         self.gender = gender
         self.position = 0
 
-    def all_user_info(self):
+    """def all_user_info(self):
         return (self.first_name, self.last_name, self.date_of_birth,
-                self.gender, self.position, self.players)
+                self.gender, self.position, self.players)"""
 
     def __str__(self):
         return self.first_name
@@ -143,10 +146,10 @@ class Match:
     @classmethod
     def deserialize(cls, data):
         instance = cls(Player.deserialize(data["player1"]),
-                       Player.deserialize(data["player2"]))
+                       Player.deserialize(data["player2"]),)
         instance.score_p1 = data["score_p1"]
         instance.score_p2 = data["score_p2"]
-        return instance.score_p1, instance.score_p2
+        return instance
 
     def set_winner(self, winner):
         if winner == 1:
@@ -160,6 +163,7 @@ class Match:
             self.player1.position += 0.5
             self.score_p2 = 0.5
             self.player2.position += 0.5
+
 
 class Round:
 
@@ -186,21 +190,15 @@ class Round:
         for match_info in data["matchs"]:
             instance.add_match(Match.deserialize(match_info))
         return instance
-    
+
     def generate_pair(self):
         self.tournament.players.sort(key=lambda x: x.position)
         spliting = len(self.tournament.players)
-        #list = self.tournament.players
         middle_index = spliting // 2
         superior_list = self.tournament.players[:middle_index]
         inferior_list = self.tournament.players[middle_index:]
-        #pairing = [(a, b) for id, a in enumerate(list) for b in list[id +1:]]
         for i, player1 in enumerate(superior_list):
             player2 = inferior_list[i - 1]
             match = Match(player1, player2)
             self.add_match(match)
-        """player1 = superior_list
-        player2 = inferior_list
-        pairing = [(a, b) for a in player1 for b in player2 if a != b]
-        match = Match(player1, player2)
-        self.add_match(match)"""
+

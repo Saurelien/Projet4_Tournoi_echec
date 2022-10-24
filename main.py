@@ -18,7 +18,16 @@ def load_tournament():
         print(player.serialize())
     for t in load_table:
         tournament_list.append(Tournament.deserialize(t))
+    for tournament in tournament_list:
+        print(tournament.serialize())
 
+
+def pause_and_resume():
+    for resume_tournament in controler.create_tournament():
+        if Tournament.save():
+            return
+        else:
+            controler.display_main_page()
 
         
 """def back_up_tournament():
@@ -35,7 +44,7 @@ def load_tournament():
     for save_p in players_list:
         print(save_p.serialize())"""
         
-#load_tournament()
+load_tournament()
 controler = HomeController()
 controler.display_main_page()
 

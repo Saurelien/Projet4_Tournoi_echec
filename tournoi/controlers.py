@@ -1,46 +1,37 @@
 from .models import Player, Round, Tournament, players_list, tournament_list
 from .view import (HomeView, PlayerView, SortPlayer,
                    RoundView, TournamentView, MatchView, Colors)
+from utils import get_current_tournament
 
 colors = Colors()
 
 
 class HomeController:
     
-    def create_tournament(self):
+    def start_tournament(self, tournament):
         tournament_controller = TournamentController()
         player_controler = PlayerController()
-        tournament = tournament_controller.create_tournament_controler()
+        tournament = tournament or tournament_controller.create_tournament_controler()
 
-        for i in range(int(tournament.nb_players)):
+        while len(tournament.players) < tournament.nb_players:
             player = player_controler.create_user()
             tournament.add_player(player)
+            tournament.save(current=True)
         view_round = RoundView()
         for j in range(int(tournament.nb_round)):
-            t_round = Round()
-            tournament.add_round(t_round)
-            t_round.generate_pair()
-            print(tournament.players)
-            view_round.display_round(t_round)
-            match_view = MatchView()
-            for match in t_round.matchs:
-                winner = match_view.get_score(match)
-                match.set_winner(winner)
-                """if winner == 1:
-                    match.score_p1 = 1
-                    match.player1.position += 1
-                elif winner == 2:
-                    match.score_p2 = 1
-                    match.player2.position += 1
-                else:
-                    match.score_p1 = 0.5
-                    match.player1.position += 0.5
-                    match.score_p2 = 0.5
-                    match.player2.position += 0.5"""
-            #tournament.update_score()
-            match_view.display_ranking(tournament)
+            while len(tournament.rounds) < tournament.nb_round:
+                t_round = Round()
+                tournament.add_round(t_round)
+                t_round.generate_pair()
+                view_round.display_round(t_round)
+                match_view = MatchView()
+                for match in t_round.matchs:
+                    winner = match_view.get_score(match)
+                    match.set_winner(winner)
+                match_view.display_ranking(tournament)
+                tournament.save(current=True)
         tournament.save()
-        tournament.serialize()
+
 
     def display_main_page(self):
         main = HomeView()
@@ -48,10 +39,11 @@ class HomeController:
         report = ReportController()
         exit = False
         while exit is False:
-            choice = main.display_home()
+            current_tournament = get_current_tournament()
+            choice = main.display_home(in_progress=current_tournament)
             if choice == "l":
                 print("\n"f"{colors.STR_YELLOW + colors.BOLD}veuillez remplir les champs requis: ""\n")
-                home.create_tournament()
+                home.start_tournament(current_tournament)
             elif choice == "B" or choice == "b":
                 print("\n"f"{colors.STR_YELLOW + colors.BOLD}Liste des tournois{colors.ENDC}: ""\n")
                 report.tournament_detail()
@@ -71,14 +63,14 @@ class ReportController:
     def create_report_alpha(self):
         view_sort = SortPlayer()
         view_sort.display_sort_players(sorted(players_list,
-                                              key=lambda x: (x.first_name
-                                                             ,x.last_name)))
+                                              key=lambda x: (x.first_name,
+                                                             x.last_name)))
 
     def create_report_points(self):
         view_points = SortPlayer()
         view_points.display_sort_points(sorted(players_list,
-                                        key=lambda x: x.position
-                                        ,reverse=True))
+                                        key=lambda x: x.position,
+                                        reverse=True))
 
     def tournament_detail(self):
         tournament_list_view = TournamentView()
