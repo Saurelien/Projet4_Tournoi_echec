@@ -1,4 +1,5 @@
 from tinydb import TinyDB
+import settings
 players_list = []
 tournament_list = []
 current_tournament = None
@@ -29,14 +30,14 @@ class Tournament:
 
     def save(self, current=False):
         if current:
-            tournament_db = TinyDB("db_current_tournament.json")
-            current_tournament_table = tournament_db.table("current_tournament")
+            tournament_db = TinyDB(settings.DB_NAME)
+            current_tournament_table = tournament_db.table(settings.TABLE_CURRENT_TOURNAMENT)
             current_tournament_table.truncate()
             current_tournament_table.insert(self.serialize())
             return
         tournament_list.append(self)
-        tournament_db = TinyDB("db.json")
-        tournament_table = tournament_db.table("tournaments")
+        tournament_db = TinyDB(settings.DB_NAME)
+        tournament_table = tournament_db.table(settings.TABLE_TOURNAMENT)
         tournament_table.truncate()
         for tournament in tournament_list:
             tournament_table.insert(tournament.serialize())
@@ -58,7 +59,7 @@ class Tournament:
         for player in self.players:
             data["players"].append(player.serialize())
         for data_tournament in self.rounds:
-            data["rounds"].append(data_tournament.round_serialized())
+            data["rounds"].append(data_tournament.serialize())
         return data
 
     @classmethod
@@ -70,17 +71,13 @@ class Tournament:
                          data["time_control"],
                          data["description"],
                          data["nb_players"])
-        for round_info in data["rounds"]:
-            tournament.add_round(Round.deserialize(round_info))
+        print(tournament.nb_round)
         for player_info in data["players"]:
             tournament.add_player(Player.deserialize(player_info))
+        for round_info in data["rounds"]:
+            tournament.add_round(Round.deserialize(round_info))
         return tournament
 
-    def check_step(self):
-        current_db = TinyDB("current_t.json")
-        current_table = current_db.table("current_tournament")
-        current_table.truncate()
-        
 
 class Player:
 
@@ -101,11 +98,11 @@ class Player:
 
     def save(self):
         players_list.append(self)
-        db = TinyDB("player_db.json")
-        db_table = db.table("players")
+        db = TinyDB(settings.DB_NAME)
+        db_table = db.table(settings.TABLE_PLAYER)
         db_table.truncate()
         for player in players_list:
-            db_table.insert(player.serialize()) 
+            db_table.insert(player.serialize())
 
     def serialize(self):
         return {
@@ -135,7 +132,7 @@ class Match:
         self.score_p1 = 0
         self.score_p2 = 0
 
-    def match_serialized(self):
+    def serialize(self):
         return {
                 "player1": self.player1.serialize(),
                 "player2": self.player2.serialize(),
@@ -175,13 +172,12 @@ class Round:
         self.matchs.append(match)
         match.round = self
 
-    def round_serialized(self):
+    def serialize(self):
         data = {
-                "tournament": self.tournament.name,
                 "matchs": list()
                 }
         for data_round in self.matchs:
-            data["matchs"].append(data_round.match_serialized())
+            data["matchs"].append(data_round.serialize())
         return data
 
     @classmethod
