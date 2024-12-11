@@ -71,7 +71,6 @@ class Tournament:
                          data["time_control"],
                          data["description"],
                          data["nb_players"])
-        print(tournament.nb_round)
         for player_info in data["players"]:
             tournament.add_player(Player.deserialize(player_info))
         for round_info in data["rounds"]:
@@ -197,4 +196,3 @@ class Round:
             player2 = inferior_list[i - 1]
             match = Match(player1, player2)
             self.add_match(match)
-

@@ -1,13 +1,12 @@
-from .models import Player, Round, Tournament, players_list, tournament_list
-from .view import (HomeView, PlayerView, SortPlayer,
-                  RoundView, TournamentView, MatchView, Colors)
+from tournoi.models import Player, Round, Tournament, players_list, tournament_list
+from tournoi.view import (HomeView, PlayerView, SortPlayer, RoundView, TournamentView, MatchView, Colors)
 from utils import get_current_tournament, current_tournament_finished
 
 colors = Colors()
 
 
 class HomeController:
-    
+
     def start_tournament(self, tournament):
         tournament_controller = TournamentController()
         player_controler = PlayerController()
@@ -19,8 +18,6 @@ class HomeController:
             tournament.save(current=True)
         view_round = RoundView()
         while len(tournament.rounds) < tournament.nb_round:
-            print(len(tournament.rounds))
-            print(tournament.nb_round)
             t_round = Round()
             tournament.add_round(t_round)
             t_round.generate_pair()
@@ -57,6 +54,8 @@ class HomeController:
             elif choice == "Q" or choice == "q":
                 exit = True
                 print("\n"f"{colors.STR_YELLOW}Vous avez quitté l'application avec succès !")
+
+
 class ReportController:
 
     def create_report_alpha(self):
@@ -68,8 +67,8 @@ class ReportController:
     def create_report_points(self):
         view_points = SortPlayer()
         view_points.display_sort_points(sorted(players_list,
-                                        key=lambda x: x.position,
-                                        reverse=True))
+                                               key=lambda x: x.position,
+                                               reverse=True))
 
     def tournament_detail(self):
         tournament_list_view = TournamentView()
