@@ -31,6 +31,7 @@
     
    ### Generer un rapport flake8
     -  Vous pouvez verifier si flake8-html est présent et à jour par rapport au fichier requirement.txt
+    - La version de flak8: 5.0.4
     - Verifier la présence du fichier de configuration .flake8 qui devrait contenir:
       - [flake8]
       - max-line-length=119
@@ -39,7 +40,7 @@
       - format=html
       - htmldir=flake
       - exclude=.venv
-    - Dans le terminal, lancer la commande flake8
+    - Dans le terminal, lancer la commande 'flake8'
 
 ### Lancement du programme
 
