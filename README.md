@@ -24,7 +24,24 @@
        - Confirmer que la version de l'interpréteur Python est la version 3.7 ou supérieure `python --version`
        - Confirmer que la commande `pip` exécute l'exécutable pip dans l'environnement virtuel, `which pip`
        - Pour désactiver l'environnement, `deactivate`
-   ### Lancement du programme
+
+   ### Installation des requirements
+    - Dans le terminal appliquer la commande suivant:
+      - pip install -r requirements.txt
+    
+   ### Generer un rapport flake8
+    -  Vous pouvez verifier si flake8-html est présent et à jour par rapport au fichier requirement.txt
+    - Verifier la présence du fichier de configuration .flake8 qui devrait contenir:
+      - [flake8]
+      - max-line-length=119
+      - comma_separated_list=True
+      - normalize_paths=True
+      - format=html
+      - htmldir=flake
+      - exclude=.venv
+    - Dans le terminal, lancer la commande flake8
+
+### Lancement du programme
 
 - Utilisez la méthode "RUN" de pycharm depuis le fichier main.py
   - Vous devriez avoir un affichage du menu principal:
