@@ -63,6 +63,7 @@ class TournamentView:
                 player_2 = f"{Colors.OKGREEN}{player_round.player2}"
                 print(f"{Colors.OKCYAN}- {i} {player_1} {Colors.d_red_vs} {player_2}")
         print("\n"f"{Colors.STR_YELLOW}Classement des joueurs: ""\n")
+        tournament.players.sort(key=lambda x: x.position, reverse=True)
         for rank in tournament.players:
             player_position = f"{Colors.OKGREEN}{rank.position} {Colors.FAIL} points"
             player_first_name = f"{Colors.OKCYAN}* {Colors.OKGREEN}{rank.first_name}"

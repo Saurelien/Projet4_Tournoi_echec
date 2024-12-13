@@ -88,10 +88,6 @@ class Player:
         self.gender = gender
         self.position = 0
 
-    """def all_user_info(self):
-        return (self.first_name, self.last_name, self.date_of_birth,
-                self.gender, self.position, self.players)"""
-
     def __str__(self):
         return self.first_name
 
@@ -186,13 +182,40 @@ class Round:
             instance.add_match(Match.deserialize(match_info))
         return instance
 
+    def match_already_played(self, player1, player2):
+        for round in self.tournament.rounds:
+            for match in round.matchs:
+                if ((match.player1 == player1 and match.player2 == player2) or
+                        (match.player1 == player2 and match.player2 == player1)):
+                    return True
+        return False
+
     def generate_pair(self):
+        # Crée deux liste de joueurs divisble par 2
         self.tournament.players.sort(key=lambda x: x.position)
         spliting = len(self.tournament.players)
         middle_index = spliting // 2
         superior_list = self.tournament.players[:middle_index]
         inferior_list = self.tournament.players[middle_index:]
-        for i, player1 in enumerate(superior_list):
-            player2 = inferior_list[i - 1]
+        pairs = []
+        used_indices = set()
+        for player1 in superior_list:
+            player2 = None
+            # Trouver un joueur non apparié qui n'a pas déjà joué contre le joueur 1
+            for i, t_candidate in enumerate(inferior_list):
+                if i not in used_indices and not self.match_already_played(player1, t_candidate):
+                    player2 = t_candidate
+                    used_indices.add(i)
+                    break
+            # Si aucun joueur valide n'est trouvé, prendre le premier non utilisé et le placer contre le joueur 1
+            if player2 is None:
+                for i, t_candidate in enumerate(inferior_list):
+                    if i not in used_indices:
+                        player2 = t_candidate
+                        used_indices.add(i)
+                        break
+            if player2:
+                pairs.append((player1, player2))
+        for player1, player2 in pairs:
             match = Match(player1, player2)
             self.add_match(match)
